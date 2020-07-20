@@ -1,3 +1,9 @@
+"""Anthony Dupont
+   Katie
+   Nicholas Kong
+   Jessica
+   7/20/2020
+   PHYS 2331"""
 import math
 
 # TODO clean up these horrible variable names and argument names, disgusting
