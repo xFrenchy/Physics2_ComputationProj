@@ -8,6 +8,7 @@
 import math
 
 # TODO clean up these horrible variable names and argument names, disgusting
+# TODO add units when we display results
 
 # These are pretty much going to be globals
 x_input = float(input("Type in the x value"))
@@ -25,9 +26,8 @@ def compute_r_distance():
     y_prime = 0.1
     delta_y = []
     r_values = []
-    global error_count
     while y_prime < length:
-        delta_y.append(round(y_input - y_prime, 1))
+        delta_y.append(round(y_input - y_prime, 1))     # Rounding to avoid float number issues such as 2.000000000001
         y_prime += 0.1
 
     # Following the equation the professor gave us but it doesn't make sense that it's x-y instead of x+y
@@ -42,8 +42,8 @@ def compute_v_values(r_value_list, delta_y_value_list):
     q_values = []
     v = 0.0
     # solve for all delta q's
-    for i in range(len(delta_y_value_list)-1):  # we -1 because r_value_list is 1 less total length compared to delta y
-        q_values.append(charge_input / length * delta_y_value_list[i])   # y is delta y
+    for i in range(len(delta_y_value_list)):
+        q_values.append(charge_input / length * delta_y_value_list[i])
         # now solve for delta V
         v += k_const*q_values[i]/r_value_list[i]
         v_values.append(v)  # Thanks to some big brain thinking, we can do all of
@@ -53,16 +53,19 @@ def compute_v_values(r_value_list, delta_y_value_list):
 def compute_electric_field(delta_v_value_list ,delta_y_value_list):
     """In this function, we will compute the electric field in both the x and y direction, display both
     and then display the total electric field as well"""
-    # Keep in mind for this project, our x value is 0 and we're only moving in the y direction...
+    # Keep in mind for this project, our x value is constant and we're only moving in the y direction...
+    e_x_field = 0.0
     e_y_field = 0.0
     for i in range(len(delta_v_value_list)):
         try:
+            e_x_field += -(delta_v_value_list[i]/x_input)
             e_y_field += -(delta_v_value_list[i]/delta_y_value_list[i])
         except ZeroDivisionError:
             pass
-    print("\nThe electric field in the x direction is 0 since we are not moving in the x direction")
-    print("The total electric field and also in the y direction is: ")
-    print(e_y_field)
+    print("\nThe electric field in the x direction: " + str(e_x_field))
+    print("The electric field in the y direction: " + str(e_y_field))
+    e_field = e_x_field + e_y_field
+    print("The total electric field is: " + str(e_field))
 
 # ---------------------------------------MAIN GOES BELOW--------------------------------------------------------------
 
