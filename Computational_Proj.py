@@ -7,11 +7,12 @@
 import math
 
 # TODO clean up these horrible variable names and argument names, disgusting
+# TODO change the r equation from x - y to x + y, update r value list because we had to pop but no longer do
 
 # These are pretty much going to be globals
 x_input = float(input("Type in the x value"))
 y_input = float(input("Type in the y value"))
-charge = float(input("Type in the q value"))
+charge_input = float(input("Type in the q value"))
 length = float(input("Type in the length value"))
 k_const = 9.0 * (10 ** 9)   # 9.0x10^9
 
@@ -21,16 +22,16 @@ def compute_r_distance():
     for example if the length is 10, we will gradually go up through it by starting at 0.1, then 0.2...
     etc all the way up to 10. This will give us many values for r throughout the entire length
     we will return a list full of these values"""
-    index = 0.1
+    y_prime = 0.1
     delta_y = []
     r_values = []
-    while index < length:
-        delta_y.append(round(index, 1))
-        index += 0.1
+    while y_prime < length:
+        delta_y.append(round(y_prime, 1))
+        y_prime += 0.1
 
     # ---CAUTION--- currently this loop will break if the user inputs a Y value that is bigger than X
     for y in delta_y:
-        r_values.append(math.sqrt((x_input ** 2) - (y_input - y) ** 2))     # ** is the syntax for squaring in python
+        r_values.append(math.sqrt((x_input ** 2) + (y_input - y) ** 2))     # ** is the syntax for squaring in python
     # the very last value of this list is going to be 0 because Ymax - Ymax is just 0
     r_values.pop()
     return r_values, delta_y
@@ -43,7 +44,7 @@ def compute_v_values(r_value_list, delta_y_value_list):
     v = 0.0
     # solve for all delta q's
     for i in range(len(delta_y_value_list)-1):  # we -1 because r_value_list is 1 less total length compared to delta y
-        q_values.append(charge/(2*length) * delta_y_value_list[i])   # y is delta y
+        q_values.append(charge_input / (2 * length) * delta_y_value_list[i])   # y is delta y
         # now solve for delta V
         v += k_const*q_values[i]/r_value_list[i]
         v_values.append(v)  # Thanks to some big brain thinking, we can do all of
