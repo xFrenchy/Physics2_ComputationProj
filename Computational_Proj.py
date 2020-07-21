@@ -15,6 +15,7 @@ y_input = float(input("Type in the y value"))
 charge_input = float(input("Type in the q value"))
 length = float(input("Type in the length value"))
 k_const = 9.0 * (10 ** 9)   # 9.0x10^9
+error_count = 0
 
 def compute_r_distance():
     """In this function, we will calculate the value of r, that will be constantly changing due to delta y
@@ -25,15 +26,21 @@ def compute_r_distance():
     y_prime = 0.1
     delta_y = []
     r_values = []
+    global error_count
     while y_prime < length:
-        delta_y.append(round(y_prime, 1))
+        delta_y.append(round(y_input - y_prime, 1))
         y_prime += 0.1
 
-    # ---CAUTION--- currently this loop will break if the user inputs a Y value that is bigger than X
+    # Following the equation the professor gave us but it doesn't make sense that it's x-y instead of x+y
     for y in delta_y:
-        r_values.append(math.sqrt((x_input ** 2) + (y_input - y) ** 2))     # ** is the syntax for squaring in python
-    # the very last value of this list is going to be 0 because Ymax - Ymax is just 0
-    r_values.pop()
+        try:
+            r_values.append(math.sqrt((x_input**2) - (y**2)))     # ** is the syntax for squaring in python
+        except ValueError:
+            error_count += 1
+            r_values.append(0.0)
+    if error_count > 0:
+        print("We ran into some issues with that calculation. We ended up getting " + str(error_count) +
+              " imaginary numbers from calculating the r value. They have been replaced with a 0 for now")
     return r_values, delta_y
 
 def compute_v_values(r_value_list, delta_y_value_list):
@@ -46,8 +53,12 @@ def compute_v_values(r_value_list, delta_y_value_list):
     for i in range(len(delta_y_value_list)-1):  # we -1 because r_value_list is 1 less total length compared to delta y
         q_values.append(charge_input / (2 * length) * delta_y_value_list[i])   # y is delta y
         # now solve for delta V
-        v += k_const*q_values[i]/r_value_list[i]
-        v_values.append(v)  # Thanks to some big brain thinking, we can do all of
+        try:
+            v += k_const*q_values[i]/r_value_list[i]
+            v_values.append(v)  # Thanks to some big brain thinking, we can do all of
+        except ZeroDivisionError:
+            # This error only occurs because our r equation is x - y instead of x + y
+            v_values.append(0)
         # this computation in a single loop iterating through two different arrays only once for O(n) computation
     return v_values, q_values, v
 
@@ -55,24 +66,27 @@ def compute_electric_field(delta_v_value_list ,delta_y_value_list):
     """In this function, we will compute the electric field in both the x and y direction, display both
     and then display the total electric field as well"""
     # Keep in mind for this project, our x value is 0 and we're only moving in the y direction...
-    e_field = 0.0
     e_y_field = 0.0
     for i in range(len(delta_v_value_list)):
-        e_y_field += -(delta_v_value_list[i]/delta_y_value_list[i])
-    print("The electric field in the x direction is 0 since we are not moving in the x direction")
+        try:
+            e_y_field += -(delta_v_value_list[i]/delta_y_value_list[i])
+        except ZeroDivisionError:
+            pass
+    print("\nThe electric field in the x direction is 0 since we are not moving in the x direction")
     print("The total electric field and also in the y direction is: ")
     print(e_y_field)
 
 # ---------------------------------------MAIN GOES BELOW--------------------------------------------------------------
 
-list = compute_r_distance()
-r_list = list[0]
-delta_y_list = list[1]
+
+list1 = compute_r_distance()
+r_list = list1[0]
+delta_y_list = list1[1]
 # we have all values for r, time to solve for all V's
-list = compute_v_values(r_list, delta_y_list)
-v_list = list[0]
-q_charge_list = list[1]
-v_value = list[2]
-print("Here is the electric potential: ")
+list2 = compute_v_values(r_list, delta_y_list)
+v_list = list2[0]
+q_charge_list = list2[1]
+v_value = list2[2]
+print("\nHere is the electric potential: ")
 print(v_value)
 compute_electric_field(v_list, delta_y_list)
