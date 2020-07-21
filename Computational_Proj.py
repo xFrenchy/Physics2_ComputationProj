@@ -1,13 +1,13 @@
 """Anthony Dupont
-   Katie
+   Kulprawee Prayoonsuk
    Nicholas Kong
-   Jessica
+   Jessica Hernandez-Fernandez
+   Erik Fong
    7/20/2020
    PHYS 2331"""
 import math
 
 # TODO clean up these horrible variable names and argument names, disgusting
-# TODO change the r equation from x - y to x + y, update r value list because we had to pop but no longer do
 
 # These are pretty much going to be globals
 x_input = float(input("Type in the x value"))
@@ -15,7 +15,6 @@ y_input = float(input("Type in the y value"))
 charge_input = float(input("Type in the q value"))
 length = float(input("Type in the length value"))
 k_const = 9.0 * (10 ** 9)   # 9.0x10^9
-error_count = 0
 
 def compute_r_distance():
     """In this function, we will calculate the value of r, that will be constantly changing due to delta y
@@ -33,14 +32,7 @@ def compute_r_distance():
 
     # Following the equation the professor gave us but it doesn't make sense that it's x-y instead of x+y
     for y in delta_y:
-        try:
-            r_values.append(math.sqrt((x_input**2) - (y**2)))     # ** is the syntax for squaring in python
-        except ValueError:
-            error_count += 1
-            r_values.append(0.0)
-    if error_count > 0:
-        print("We ran into some issues with that calculation. We ended up getting " + str(error_count) +
-              " imaginary numbers from calculating the r value. They have been replaced with a 0 for now")
+        r_values.append(math.sqrt((x_input**2) + (y**2)))     # ** is the syntax for squaring in python
     return r_values, delta_y
 
 def compute_v_values(r_value_list, delta_y_value_list):
@@ -51,14 +43,10 @@ def compute_v_values(r_value_list, delta_y_value_list):
     v = 0.0
     # solve for all delta q's
     for i in range(len(delta_y_value_list)-1):  # we -1 because r_value_list is 1 less total length compared to delta y
-        q_values.append(charge_input / (2 * length) * delta_y_value_list[i])   # y is delta y
+        q_values.append(charge_input / length * delta_y_value_list[i])   # y is delta y
         # now solve for delta V
-        try:
-            v += k_const*q_values[i]/r_value_list[i]
-            v_values.append(v)  # Thanks to some big brain thinking, we can do all of
-        except ZeroDivisionError:
-            # This error only occurs because our r equation is x - y instead of x + y
-            v_values.append(0)
+        v += k_const*q_values[i]/r_value_list[i]
+        v_values.append(v)  # Thanks to some big brain thinking, we can do all of
         # this computation in a single loop iterating through two different arrays only once for O(n) computation
     return v_values, q_values, v
 
