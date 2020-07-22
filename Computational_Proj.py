@@ -6,6 +6,7 @@
    7/20/2020
    PHYS 2331"""
 import math
+import matplotlib.pyplot as plt
 
 # TODO clean up these horrible variable names and argument names, disgusting
 # TODO add units when we display results
@@ -84,3 +85,8 @@ v_list = list2[0]
 q_charge_list = list2[1]
 v_value = list2[2]
 compute_electric_field(v_list, delta_y_list)
+# plotting the delta v values that was calculated
+plt.plot(v_list)
+plt.ylabel("V(m)")
+plt.title("V(x,y)=" + str(x_input) + "," + str(y_input))
+plt.show()
